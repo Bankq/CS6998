@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import shelve
+import time
+
+from project import api
+from project.src.index import Index
+
+## TO-DO
+## Give information
+
+def main():
+    if len(sys.argv) > 1:
+        filepath = sys.argv[1]
+    else:
+        filepath = "./raw_data/cranfieldDocs/";
+
+    shelf = shelve.open("./shelve")
+    start = time.clock()
+    try:
+        shelf["indexObj"] = api.setup_index(filepath)
+        end = time.clock()
+        print "\n[Time]: ",end - start," secs"
+        ndoc = shelf["indexObj"]._num_of_docs
+        nwords = len(shelf["indexObj"]._tokens)
+    except OSError:
+        print "*** Invalid Path ***"
+        exit()
+    shelf.close()
+    print "[Index Size:] "+str(os.path.getsize("./shelve")/(1024*1024)) + "MB"
+    print "["+str(ndoc)+" documents; "+str(nwords) +" words]"
+
+if __name__ == '__main__':
+    main()

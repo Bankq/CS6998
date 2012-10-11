@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+
+import os
+import shelve
+import re
+
+from project import api
+
+def main():
+    """ Main query loop, taking a query then returns the error """
+    db = shelve.open("./shelve")
+    if not db.has_key("indexObj"):
+        print "*** Index not found. Run './index PATHNAME' first ***"
+        exit()
+    
+    index = db["indexObj"]
+    
+    while True:
+        # enter query handling loop
+        query = raw_input()
+        if is_title_query(query):
+            handle_title_query(query,index)
+        elif is_doc_query(query):
+            handle_doc_query(query,index)
+        elif is_tf_query(query):
+            handle_tf_query(query,index)
+        elif is_df_query(query):
+            handle_df_query(query,index)
+        elif is_freq_query(query):
+            handle_freq_query(query,index)
+        elif is_similar_query(query):
+            handle_similar_query(query,index)
+        elif len(query) > 0:
+            handle_plain_query(query,index)
+        
+def is_title_query(query):
+    return query.split()[0] == "title"
+
+def is_doc_query(query):
+    return query.split()[0] == "doc"
+
+def is_tf_query(query):
+    return query.split()[0] == "tf"
+
+def is_df_query(query):
+    return query.split()[0] == "df"
+
+def is_freq_query(query):
+    return query.split()[0] == "freq"
+
+def is_similar_query(query):
+    return query.split()[0] == "similar"
+
+def handle_title_query(query,index):
+    terms = query.split()
+    if len(terms) > 1:
+        docid = int(terms[1])
+        print api.get_title(docid,index)
+    else:
+        print "Invalid query!"
+
+def handle_doc_query(query,index):
+    terms = query.split()
+    if len(terms) > 1:
+        docid = int(terms[1])
+        print api.get_doc(docid,index)
+    else:
+        print "Invalid query!"
+
+def handle_tf_query(query,index):
+    terms = query.split()
+    if len(terms) > 2:
+        docid = int(terms[1])
+        term = terms[2]
+        print api.get_tf(docid,term,index)
+    else:
+        print "Invalid query!"
+
+def handle_df_query(query,index):
+    terms =  re.findall(r'(\w+|".*?")', query)
+    if len(terms) > 1:
+        term = terms[1]
+        print api.get_df(term,index)
+    else:
+        print "Invalid query!"
+
+def handle_freq_query(query,index):
+    terms =  re.findall(r'(\w+|".*?")', query)
+    if len(terms) > 1:
+        term = terms[1]
+        print api.get_freq(term,index)
+    else:
+        print "Invalid query!"
+
+def handle_similar_query(query,index):
+    terms = query.split()
+    if len(terms) > 1:
+        for term in terms[1:]:
+            print "--- "+term+" ---"
+            print 
+            l = api.get_similar_list(term,index)
+            if len(l) > 0:
+                for i in l:
+                    print i
+            else:
+                print "Not found"
+        print
+
+def handle_plain_query(query,index):
+    terms =  re.findall(r'(\!?\w+|".*?")', query)
+    if len(terms) > 0:
+        print api.get(terms,index)
+    else:
+        print "Invalid query!"
+
+
+if __name__ == '__main__':
+    main()

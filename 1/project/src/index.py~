@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+
+# Index.py
+# Construct a inverted index based and write to a python shelve object
+
+import os
+import shelve
+
+from .document import Document
+
+
+class Index():
+    """
+    Inverted Index
+    """
+
+    def __init__(self, filepath="./raw_data/cranfieldDocs/"):
+        """
+        Arguments:
+        - `filepath`:
+        """
+        self._filepath = filepath
+        self._filenames = [f for f in os.listdir(self._filepath)]
+        self._num_of_docs = len(self._filenames)
+        self._index = dict()
+
+    def setup(self):
+        for filename in self._filenames:
+            d = Document(self._filepath+filename)
+            docid = d._id
+            tokens = d._tokens
+            for token in tokens:
+                self.add_token(token,docid)
+            
+    def add_token(self,token,docid):
+        f = lambda x: x["docid"] == docid
+        if token in self._index:
+            doc_list = self._index[token]
+            doc_items = filter(f,doc_list)
+            if len(doc_items) != 0:
+                doc_items[0]["freq"] += 1
+            else:
+                self._index[token].append(dict({"docid":docid,"freq":1}))
+        else:
+            self._index[token] = [dict({"docid":docid,"freq":1})]
+    
+    def get_token(self,token):
+        if token in self._index:
+            return self._index[token]
+        else:
+            return False
+                           
+                
+            
+            
+    def number_of_docs(self):
+        return self._num_of_docs
+    

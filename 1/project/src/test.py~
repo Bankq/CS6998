@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+
+import nose
+from .document import Document
+from .index import Index
+
+def test_document():
+    d = Document("/home/bank/Dropbox/Columbia/E6998/SearchEngineTechnology/hw/1/raw_data/cranfieldDocs/cranfield0001")
+    assert d._id == 1
+    assert d._title
+    assert d._biblio
+    assert len(d._text) > 500
+
+
+def test_index():
+    index = Index()
+    filenames = index._filenames
+    ids = index.setup()
+    assert len(filenames) == sum(1 for j in ids)
+
+
+
+        

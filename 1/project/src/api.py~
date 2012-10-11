@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+
+#==================================
+# api.py
+#     Providing a high level api
+#     for outer callings(index,query
+#     etc.).
+#==================================
+
+import os
+
+from .index import Index
+from .document import Document
+
