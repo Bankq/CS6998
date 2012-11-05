@@ -1,0 +1,11 @@
+import sys
+import csv
+import shelve
+
+
+def main(model_file_path,test_file_path,prediction_file_path):
+    test_doc = Document(test_file_path, "test")
+    shelf = shelve.open(model_file_path)
+    if shelf["classifier"] == "NaiveBayes":
+        bayes_classify(shelf["model"],test_doc.model,prediction_file_path)
+    shelf.close()
