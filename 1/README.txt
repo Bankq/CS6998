@@ -16,7 +16,7 @@ Main Files:
 - index
 - raw_data/
 - project/
----------/api.py
+---------api.py
 ---------src/index.py
 ---------src/document.py
          
@@ -27,7 +27,7 @@ Main Files:
 
 ./index PATH
         For given PATH, ./index collect all the files under it and generate the index and metadata we need
-        in the ./query.
+        in the query.
 
 ./query
         - All valid queries are described in the instruction.md file.

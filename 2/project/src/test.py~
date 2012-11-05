@@ -1,3 +1,0 @@
-import document
-
-d = document.Document()

@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+##================================================
+##               query
+##   CS6998 - Search Engine Technology 
+##   Columbia University
+##   Author: Hang Qian
+##  
+##================================================
 
 import os
 import shelve
@@ -14,10 +21,18 @@ def main():
         exit()
     
     index = db["indexObj"]
-    
+    print "=== All set, please enter the queries ==="
     while True:
         # enter query handling loop
-        query = raw_input()
+        try:
+            query = raw_input()
+        except EOFError:
+            print "Bye~"
+            exit()
+        # handle different query based on its precedes
+        if is_exit(query):
+            print "Bye~"
+            exit()
         if is_title_query(query):
             handle_title_query(query,index)
         elif is_doc_query(query):
@@ -32,7 +47,11 @@ def main():
             handle_similar_query(query,index)
         elif len(query) > 0:
             handle_plain_query(query,index)
-        
+
+def is_exit(query):
+    cmd = query.split()[0]
+    return cmd == "exit" or cmd == "quit"
+
 def is_title_query(query):
     return query.split()[0] == "title"
 
@@ -52,6 +71,8 @@ def is_similar_query(query):
     return query.split()[0] == "similar"
 
 def handle_title_query(query,index):
+    """ Handle 'title DOCID' query
+        return the title of doc[DOCID]"""
     terms = query.split()
     if len(terms) > 1:
         docid = int(terms[1])
@@ -60,6 +81,9 @@ def handle_title_query(query,index):
         print "Invalid query!"
 
 def handle_doc_query(query,index):
+    """ Handle 'doc DOCID' query 
+        return the whole content
+        of doc[DOCID]"""
     terms = query.split()
     if len(terms) > 1:
         docid = int(terms[1])
@@ -68,6 +92,9 @@ def handle_doc_query(query,index):
         print "Invalid query!"
 
 def handle_tf_query(query,index):
+    """ Handle 'tf DOCID term' 
+        query. Shows the term frequency of 
+        given document and term"""
     terms = query.split()
     if len(terms) > 2:
         docid = int(terms[1])
@@ -77,6 +104,9 @@ def handle_tf_query(query,index):
         print "Invalid query!"
 
 def handle_df_query(query,index):
+    """ Handle 'df term' query.
+        return the number of documents
+        in which term appears in the index"""
     terms =  re.findall(r'(\w+|".*?")', query)
     if len(terms) > 1:
         term = terms[1]
@@ -85,6 +115,9 @@ def handle_df_query(query,index):
         print "Invalid query!"
 
 def handle_freq_query(query,index):
+    """ Handle 'freq term' query.
+        return how many times the term
+        appears in the index """
     terms =  re.findall(r'(\w+|".*?")', query)
     if len(terms) > 1:
         term = terms[1]
@@ -93,6 +126,8 @@ def handle_freq_query(query,index):
         print "Invalid query!"
 
 def handle_similar_query(query,index):
+    """ Give a similar words list of
+        a given word in a context"""
     terms = query.split()
     if len(terms) > 1:
         for term in terms[1:]:
@@ -107,6 +142,7 @@ def handle_similar_query(query,index):
         print
 
 def handle_plain_query(query,index):
+    """ Give a document list sorted by it's score """
     terms =  re.findall(r'(\!?\w+|".*?")', query)
     if len(terms) > 0:
         print api.get(terms,index)

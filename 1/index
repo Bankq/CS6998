@@ -1,5 +1,13 @@
 #!/usr/bin/env python
+##================================================
+##               index
+##   CS6998 - Search Engine Technology 
+##   Columbia University
+##   Author: Hang Qian
+##  
+##================================================
 
+ 
 import os
 import sys
 import shelve
@@ -8,19 +16,21 @@ import time
 from project import api
 from project.src.index import Index
 
-## TO-DO
-## Give information
 
 def main():
     if len(sys.argv) > 1:
         filepath = sys.argv[1]
     else:
+        #give a default path
         filepath = "./raw_data/cranfieldDocs/";
-
+        
+    # Store the whole index in a local file
     shelf = shelve.open("./shelve")
     start = time.clock()
     try:
+        # call api function to setup index
         shelf["indexObj"] = api.setup_index(filepath)
+
         end = time.clock()
         print "\n[Time]: ",end - start," secs"
         ndoc = shelf["indexObj"]._num_of_docs
@@ -28,6 +38,7 @@ def main():
     except OSError:
         print "*** Invalid Path ***"
         exit()
+
     shelf.close()
     print "[Index Size:] "+str(os.path.getsize("./shelve")/(1024*1024)) + "MB"
     print "["+str(ndoc)+" documents; "+str(nwords) +" words]"

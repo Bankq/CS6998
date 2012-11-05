@@ -9,7 +9,9 @@
 	           Due:   Oct. 10, 2012    11:55PM
 
 
-	In this project, you will build a basic information retrieval
+	
+
+In this project, you will build a basic information retrieval
 system. Given a local corpus, your code will process the documents in
 the corpus, and build an inverted index from them. After building the
 index, your code will take a query, process it, find and rank
