@@ -1,5 +1,5 @@
 import shelve
-from .src.document import Document
+from .document import Document
 
 def naive_bayes(input_path="./data/train.csv", output_path="./data/naive_bayes_model"):
     """
