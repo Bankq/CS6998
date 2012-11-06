@@ -4,6 +4,6 @@ all:
 pre:
 	./test ./data/naive_bayes_model ./data/test-data.csv ./pre
 test:
-	nosetests -s project/src/test.py
+	nosetests -s project/mytest.py
 clean:
 	rm -rf ./pre
