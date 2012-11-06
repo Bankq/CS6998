@@ -12,10 +12,9 @@ def main(model_file_path,test_file_path,prediction_file_path):
     with open(prediction_file_path,"w") as prediction_file:
         test_list = Document(test_file_path, "test").model
         shelf = shelve.open(model_file_path)
-        if shelf["classifier"] == "NaiveBayes":
-            for instance in test_list:
-                label = bayes_bagging(shelf["models"],instance)
-                prediction_file.write(label+"\n")
+        labels = [bayes_bagging(shelf["models"],instance) for instance in test_list]
+        for label in labels:
+            prediction_file.write(label+"\n")
         shelf.close()
 
 
@@ -30,6 +29,7 @@ def bayes_bagging(models,instance):
     # threshold = float(pos_count/(pos_count + neg_count)) # with some randomness (turn out to be not working well)
     # return '1' if random.random() < threshold else '0'
     return '1' if pos_count > neg_count else '0'
+
 
 def bayes_classify(model,instance):
     p_pos = math.log(model["num_pos"]/float(model["num_doc"]))

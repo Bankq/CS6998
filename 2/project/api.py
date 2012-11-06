@@ -8,15 +8,16 @@ def naive_bayes(input_path="./data/train.csv", output_path="./data/naive_bayes_m
     input_path: file contains raw_data (.csv)
     output_path: model info after trainning
     """
-    d = Document(input_path,"train",do_stopwords=True,do_stemming=True)
-    # d_with_stopwords = Document(input_path)
-    # d_without_stopwords = Document(input_path,"train",True)
+    # d = Document(input_path,"train",do_stopwords=False,do_stemming=True)
+    d1 = Document(input_path,"train",do_stopwords=False,do_stemming=False)
+    d2 = Document(input_path,"train",do_stopwords=False,do_stemming=True)
+    d3 = Document(input_path,"train",do_stopwords=True,do_stemming=True)
     shelf = shelve.open(output_path)
     shelf["classifier"] = "NaiveBayes"
-    shelf["models"] = [naive_bayes_train_model(d.model,1.0) for i in range(1)]
-    # shelf["models"] = [naive_bayes_train_model(d_with_stopwords.model,1.0),
-    #                    naive_bayes_train_model(d_with_stopwords.model,0.8),
-    #                    naive_bayes_train_model(d_without_stopwords.model,1.0)]
+    # shelf["models"] = [naive_bayes_train_model(d.model,1.0) for i in range(1)]
+    shelf["models"] = [naive_bayes_train_model(d1.model,1.0),
+                       naive_bayes_train_model(d2.model,1.0),
+                       naive_bayes_train_model(d3.model,1.0)]
     print len(shelf["models"])
     shelf.close()
     
@@ -59,11 +60,10 @@ def naive_bayes_train_model(all_docs,ratio):
     model["word_freq_pos"] = word_freq_pos
     model["word_freq_neg"] = word_freq_neg
 
-    result_model = chi_square_test(model,0.8) # do chi-square test to select features
-    
+    result_model = chi_square_test(model,0.95) # do chi-square test to select features
     return result_model
     
-def chi_square_test(model,ratio):
+def chi_square_test(model,ratio=1):
     word_freq_pos = model["word_freq_pos"]
     word_freq_neg = model["word_freq_neg"]
     pos_words = set([w for w in word_freq_pos.keys()])
@@ -88,6 +88,8 @@ def chi_square_test(model,ratio):
             split = i
     
     print "MAX_DIFF: ",max_diff
+    print split
+    print len(select_words)
     print select_words[split],chi_square[select_words[split]]
     print select_words[split-1],chi_square[select_words[split-1]]
         
@@ -98,8 +100,11 @@ def chi_square_test(model,ratio):
             model["num_words_in_pos"] -= word_freq_pos[select_words[i]]
         if select_words[i] in word_freq_neg:
             model["num_words_in_neg"] -= word_freq_neg[select_words[i]]
-    # model["select_words"] = select_words[int(len(words)*(1-ratio)):]
-    model["select_words"] = select_words[split:]
+
+    if ratio == 1:
+        model["select_words"] = select_words[split:]
+    else:
+        model["select_words"] = select_words[int(len(words)*(1-ratio)):]        
     return model
         
                        
